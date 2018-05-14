@@ -74,6 +74,7 @@
     <Compile Include="Infra\ReceiveFilter.cs" />
     <Compile Include="Infra\ReceiveFilterFactory.cs" />
     <Compile Include="SendMessage.cs" />
+    <Compile Include="TokenControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

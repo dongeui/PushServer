@@ -43,7 +43,6 @@ namespace ADTPush
             };
 
             string contentMsg = JsonConvert.SerializeObject(postData);
-            //Debug.WriteLine("contentMsg = " + contentMsg);
 
             Byte[] byteArray = Encoding.UTF8.GetBytes(contentMsg);
             request.ContentLength = byteArray.Length;
