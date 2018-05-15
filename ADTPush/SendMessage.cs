@@ -14,7 +14,8 @@ namespace ADTPush
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
-        public string Send(string[] deviceList, string message)
+        //차후에 deveiceList고 우선 1개만
+        public string Send(string deviceList, string message)
         {
             string SERVER_API_KEY = "AAAA3EnShoY:APA91bEvDbFQJVKzsZQ1Q4LTnCiJ6juOZRH66mrB3wwk6vPUyNDA4IauSeTsiLWBGv_ZcgscVKIX8ckW6OZRcdwXiGPndDVi5TUUuiwarwU9MvrXCkV6kEB_yYSJfkKkZbZwa3JPbPV9";
 
@@ -62,6 +63,7 @@ namespace ADTPush
                 responseStream.Close();
                 response.Close();
             }
+
             catch (Exception e)
             {
                 resultStr = "";

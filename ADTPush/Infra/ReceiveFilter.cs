@@ -14,11 +14,21 @@ namespace ADTPush.Infra
         /// <summary>
         /// 0: Module, 1:App
         /// </summary>
-        public int InputType = 0;
+        public int InputType;
+        
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
         {
+            TokenControl tc = new TokenControl();
+            tc.Connection();
             //여기서 토큰, 계약번호 둘다있으면 앱, 계약번호만있으면 모듈로부터온것
             //InputType수정하고 바디랭스리턴
+            InputType = int.Parse(header[offset].ToString());
+            var CustomIdLength = header[offset + 1].ToString();
+            if (InputType == 0)
+            {
+
+            }
+
             throw new NotImplementedException();
         }
 

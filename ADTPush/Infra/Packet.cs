@@ -8,11 +8,13 @@ namespace ADTPush.Infra
 {
     public class Packet
     {
+        //이전임님이랑 정해서 + 앱에서받을것들
         public const int HeaderSize = 4;
-        //이전임님이랑 정해서
         public string CustomerID { get; set; }
         public string Token { get; set; }
+        public string State { get; set; }
         public Packet() { }
+
         //모듈로부터 계약번호만 받을때
         public Packet(string id)
         {
