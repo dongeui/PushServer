@@ -12,32 +12,36 @@ namespace ADTPush.Infra
     {
         public ReceiveFilter() : base(Packet.HeaderSize) { }
         /// <summary>
-        /// 0: Module, 1:App
+        /// Type 0:응답, 1:로그인 2:명령코드
+        /// 0: 1(성공),0(실패)
+        /// 1: Token(모바일UID)
+        /// 2: 전송명령코드
         /// </summary>
-        public int InputType;
-        
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
         {
-            TokenControl tc = new TokenControl();
-            tc.Connection();
-            //여기서 토큰, 계약번호 둘다있으면 앱, 계약번호만있으면 모듈로부터온것
-            //InputType수정하고 바디랭스리턴
-            InputType = int.Parse(header[offset].ToString());
-            var CustomIdLength = header[offset + 1].ToString();
-            if (InputType == 0)
+            byte[] dataBytes = new byte[5];
+            //잘받았으면 여기서 type만 1로 바꿔서 리스폰스(세션에다가)
+            for(int i=0; i<5; i++)
             {
-
+                dataBytes[i] = header[offset + 10 + i];
             }
+            var dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
 
-            throw new NotImplementedException();
+            return dataLength;
         }
 
         protected override PushRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
-            //InputType에 따라서 확인
-            //body length가지고 보내기
-            //sendmessage호출사용 딴데로보내지말고
-            //여기까지이벤트됨
+            //여기서 타입구분해서 로그인이면 token태우고 
+            Packet packet = new Packet();
+            var reqPacket = packet.Parse(header, bodyBuffer, offset, length);
+
+            TokenControl tc = new TokenControl(reqPacket);
+            tc.Connection();
+
+            //타입이 명령코드면 샌드메세지
+            SendMessage msg = new SendMessage();
+
             throw new NotImplementedException();
         }
     }

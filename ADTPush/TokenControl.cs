@@ -27,7 +27,7 @@ namespace ADTPush
             conn.Open();
 
             //무조건계약번호랑 토큰날라오니 기존에저장되어있던거랑 비교해야함
-            //계약번호는 안바뀜, 새로운건 크리에이트해야함
+            //계약번호는 안바뀜, 새로운건 크리에이트해야함 - 무조건 byID계약번호가져와서 결과값 없으면 넣어주고 있으면 토큰값 비교해서 다르면 토큰업데이트
 
          
             conn.Close();
@@ -47,7 +47,15 @@ namespace ADTPush
         }
         public void DeleteInfo()
         {
+            string deleteQuery = "DELTE * FROM Info where CustomerID = @id";
+            SqlCommand cmd = new SqlCommand(deleteQuery, conn);
+            cmd.Parameters.AddWithValue("@id", testId);
+            SqlDataReader reader = cmd.ExecuteReader();
 
+            while (reader.Read())
+            {
+                String.Format("{0}", reader[0]);
+            }
         }
         public void SelectInfo()
         {
@@ -61,6 +69,12 @@ namespace ADTPush
             string selectQueryById = "SELECT * FROM Info where CustomerID = @id";
             SqlCommand cmd = new SqlCommand(selectQueryById, conn);
             cmd.Parameters.AddWithValue("@id", testId);
+            SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                String.Format("{0}", reader[0]);
+            }
 
         }
     }
