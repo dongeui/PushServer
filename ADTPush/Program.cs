@@ -13,6 +13,9 @@ namespace ADTPush
         const int MaxConnect = 200;
         static void Main(string[] args)
         {
+
+           
+
             var builder = new BootstrapBuilder();
             var server = builder.Build(Port, MaxConnect);
 
@@ -27,6 +30,7 @@ namespace ADTPush
             {
                 Console.WriteLine(server.Name + " Server,  Status : " + server.State + ",  Start Time : " + server.StartedTime);
             }
+
             Console.WriteLine("Press ' q ' to shutdown the server.");
 
 

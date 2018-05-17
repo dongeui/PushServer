@@ -8,27 +8,61 @@ namespace ADTPush.Infra
 {
     public class Packet
     {
-        //이전임님이랑 정해서 + 앱에서받을것들
-        public const int HeaderSize = 4;
+        public const int HeaderSize = 16;
 
+        public string Stx = "S";
         public string CustomerID { get; set; }
         public string Type { get; set; }
         public string DataLength { get; set; }
         public string Req_time { get; set; }
         public string Res_time { get; set; }
         public string Data { get; set; }
-        public Packet() { }
+        public string Etx = "E";
+    
 
-        //모듈로부터 계약번호만 받을때
-        public Packet(string id)
+        public Packet Parse(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
-            CustomerID = id;
+            var packet = new Packet();
+            if (packet != null)
+            {
+                try
+                {
+                    byte[] idbytes = new byte[9];
+                    for (int i = 0; i < 9; i++)
+                    {
+                        idbytes[i] = header.Array[i + 1];
+                    }
+                    byte[] headerBytes = header.Array;
+                    byte[] customerIdBytes = new byte[9];
+                    for (int i = 0; i < 9; i++)
+                    {
+                        customerIdBytes[i] = headerBytes[1+i];
+                    }
+                   
+
+                    byte typeByte = header.Array[16];
+
+                    byte[] reqTimeBytes = new byte[6];
+                    Array.Copy(bodyBuffer, offset, reqTimeBytes, 0, 6);
+
+                    byte[] resTimeBytes = new byte[6];
+                    Array.Copy(bodyBuffer, offset+6, resTimeBytes, 0, 6);
+
+                    byte[] dataBytes = new byte[length];
+                    Array.Copy(bodyBuffer, offset+12, dataBytes, 0, length);
+
+                    packet.Stx = this.Stx;
+                    //packet.CustomerID = Encoding.Default.GetString()
+
+
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return packet;
         }
-        //폰으로부터 계약번호, 토큰 받을때
-        public Packet(string id, string data)
-        {
-            CustomerID = id;
-            Data = data;
-        }   
     }
 }

@@ -62,6 +62,8 @@ namespace ADTPush
                 reader.Close();
                 responseStream.Close();
                 response.Close();
+
+                //여기서 디비에 결과값과 함께 메세지 타입, 보낸시간 저장
             }
 
             catch (Exception e)
