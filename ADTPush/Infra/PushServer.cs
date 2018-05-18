@@ -9,8 +9,7 @@ namespace ADTPush.Infra
 {
     public class PushServer : AppServer<PushSession, PushRequestInfo>
     {
-        public PushServer() 
-            : base(new ReceiveFilterFactory())
+        public PushServer() : base(new ReceiveFilterFactory())
         {
 
         }

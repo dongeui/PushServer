@@ -15,11 +15,11 @@ namespace ADTPush
 
 
         //차후에 deveiceList고 우선 1개만
-        public string Send(string deviceList, string message)
+        public bool Send(string deviceList, string message)
         {
             string SERVER_API_KEY = "AAAA3EnShoY:APA91bEvDbFQJVKzsZQ1Q4LTnCiJ6juOZRH66mrB3wwk6vPUyNDA4IauSeTsiLWBGv_ZcgscVKIX8ckW6OZRcdwXiGPndDVi5TUUuiwarwU9MvrXCkV6kEB_yYSJfkKkZbZwa3JPbPV9";
 
-            string resultStr = "";
+            bool sendResult = true;
             string senderId = "946131338886";
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://fcm.googleapis.com/fcm/send");
@@ -49,29 +49,30 @@ namespace ADTPush
             request.ContentLength = byteArray.Length;
 
             Stream dataStream = request.GetRequestStream();
+            //result 를 sendReuslt에 넣어주기
             dataStream.Write(byteArray, 0, byteArray.Length);
             log.Info("Send Msg : : " + contentMsg + "    Time : : " + DateTime.Now);
             dataStream.Close();
 
-            try
-            {
-                WebResponse response = request.GetResponse();
-                Stream responseStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(responseStream);
-                resultStr = reader.ReadToEnd();
-                reader.Close();
-                responseStream.Close();
-                response.Close();
+            //try
+            //{
+            //    WebResponse response = request.GetResponse();
+            //    Stream responseStream = response.GetResponseStream();
+            //    StreamReader reader = new StreamReader(responseStream);
+            //    resultStr = reader.ReadToEnd();
+            //    reader.Close();
+            //    responseStream.Close();
+            //    response.Close();
 
-                //여기서 디비에 결과값과 함께 메세지 타입, 보낸시간 저장
-            }
+            //    //여기서 디비에 결과값과 함께 메세지 타입, 보낸시간 저장
+            //}
 
-            catch (Exception e)
-            {
-                resultStr = "";
-            }
+            //catch (Exception e)
+            //{
+            //    resultStr = "";
+            //}
 
-            return resultStr;
+            return sendResult;
         }
     }
 }

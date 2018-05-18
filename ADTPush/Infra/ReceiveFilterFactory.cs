@@ -14,7 +14,7 @@ namespace ADTPush.Infra
     {
         public override IReceiveFilter<PushRequestInfo> CreateFilter(IAppServer appServer, IAppSession appSession, IPEndPoint remoteEndPoint)
         {
-            var filter = new ReceiveFilter
+            var filter = new ReceiveFilter()
             {
             };
             return filter;
