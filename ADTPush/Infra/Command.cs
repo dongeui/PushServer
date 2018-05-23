@@ -34,7 +34,7 @@ namespace ADTPush.Infra
 
                         if (resResult)
                         {
-                            
+                            //디비 로그
                         }
 
                         break;
