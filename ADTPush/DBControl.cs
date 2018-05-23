@@ -55,10 +55,12 @@ namespace ADTPush
             conn.Close();
             return result;
         }
+
         public bool ClientLog(string id, string type, bool result, DateTime time)
         {
             bool returnResult = false;
-
+            conn.Open();
+            string msgQuery = "INSERT INTO Info (CustomerID, Type, MessageType, Date) VALUES (@id, @token, @date) ";
 
 
 

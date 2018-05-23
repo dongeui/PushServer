@@ -8,6 +8,7 @@ namespace ADTPush
 {
     public class MessageList
     {
-        public const string test1 = "다덤벼";
+        public const string test = "ADT PUSH TEST";
+        
     }
 }

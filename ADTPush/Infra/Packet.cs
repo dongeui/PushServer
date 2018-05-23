@@ -58,7 +58,8 @@ namespace ADTPush.Infra
                     packet.Type = Convert.ToString(typeByte);
                     packet.DataLength = length;
                     packet.Req_time = Encoding.Default.GetString(reqTimeBytes);
-                    packet.Res_time = null;
+                    packet.Res_time = DateTime.Now.ToString("HHmmss");
+                    //packet.Res_time = DateTime.Now.ToString("yyMMddHHmmss");
                     packet.Data = Encoding.Default.GetString(dataBytes);
                     packet.Etx = this.Etx;
 
@@ -74,7 +75,6 @@ namespace ADTPush.Infra
 
         public byte[] PacketBytes(Packet obj)
         {
-
             StringBuilder builder = new StringBuilder();
             builder.Append(obj.Stx);
             builder.Append(obj.CustomerID);

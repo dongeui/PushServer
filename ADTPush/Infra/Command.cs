@@ -32,19 +32,21 @@ namespace ADTPush.Infra
                         var ppBytes = pp.PacketBytes(pp);
                         resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
 
-                        
+                        if (resResult)
+                        {
+                            
+                        }
+
                         break;
                     case "50":
                         //db & msg send
                         string resultToken = dbc.SelectInfoById(reqPacket.CustomerID);
                         if (resultToken != null)
                         {
-                            //2일때는 데이터타입이니깐
                             var messageType = reqPacket.Data;
                             SendMessage msg = new SendMessage();
-                            bool bobo = msg.Send(resultToken, MessageList.test1);
+                            bool bobo = msg.Send(resultToken, MessageList.test);
 
-                            
                         }
 
                         //client response
