@@ -16,8 +16,6 @@ namespace ADTPush
             spi.Username = null;
             spi.Password = null;
 
-            si.DisplayName = Program.ServiceName;
-            si.ServiceName = Program.ServiceName;
             si.StartType = ServiceStartMode.Automatic;
 
             Installers.Add(spi);
