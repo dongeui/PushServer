@@ -1,20 +1,28 @@
 ﻿using ADTPush.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.ServiceProcess;
 
 namespace ADTPush
 {
-    class Program
+
+     public static class Program
     {
+
+        public const string ServiceName = "ADTPUSH";
+     
+      
         const int Port = 48484;
         const int MaxConnect = 200;
+
         static void Main(string[] args)
         {
 
-           
+            Start(args);
+
+        }
+        public static void Start(string[] args)
+        {
 
             var builder = new BootstrapBuilder();
             var server = builder.Build(Port, MaxConnect);
@@ -33,14 +41,19 @@ namespace ADTPush
 
             Console.WriteLine("Press ' q ' to shutdown the server.");
 
-
             while (Console.ReadKey().KeyChar != 'q')
             {
                 Console.WriteLine();
                 continue;
             }
-            server.Stop();
 
+            server.Start();
+        }
+
+        public static void Stop()
+        {
+            
+            //server.Stop();
         }
     }
 }

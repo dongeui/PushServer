@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADTPush.Exception;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,12 +10,7 @@ using System.Threading.Tasks;
 
 namespace ADTPush.Infra
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public class sssss
-    {
-        [MarshalAs(UnmanagedType.ByValArray,SizeConst =1)]
-        public byte name;
-    }
+   
     public class Packet
     {
         public const int HeaderSize = 16;
@@ -44,29 +40,29 @@ namespace ADTPush.Infra
 
                     byte typeByte = header.Array[15];
 
-                    byte[] reqTimeBytes = new byte[6];
-                    Array.Copy(bodyBuffer, offset, reqTimeBytes, 0, 6);
+                    int timeSize = 14;
+                    byte[] reqTimeBytes = new byte[timeSize];
+                    Array.Copy(bodyBuffer, offset, reqTimeBytes, 0, reqTimeBytes.Length);
 
-                    byte[] resTimeBytes = new byte[6];
-                    Array.Copy(bodyBuffer, offset + 6, resTimeBytes, 0, 6);
+                    byte[] resTimeBytes = new byte[timeSize];
+                    Array.Copy(bodyBuffer, offset + reqTimeBytes.Length, resTimeBytes, 0, reqTimeBytes.Length);
 
                     byte[] dataBytes = new byte[length];
-                    Array.Copy(bodyBuffer, offset + 12, dataBytes, 0, length);
+                    Array.Copy(bodyBuffer, offset + reqTimeBytes.Length + resTimeBytes.Length, dataBytes, 0, length);
                    
                     packet.Stx = this.Stx;
                     packet.CustomerID = Encoding.Default.GetString(idbytes);
                     packet.Type = Convert.ToString(typeByte);
                     packet.DataLength = length;
                     packet.Req_time = Encoding.Default.GetString(reqTimeBytes);
-                    packet.Res_time = DateTime.Now.ToString("HHmmss");
-                    //packet.Res_time = DateTime.Now.ToString("yyMMddHHmmss");
+                    packet.Res_time = DateTime.Now.ToString("yyyyMMddHHmmss");
                     packet.Data = Encoding.Default.GetString(dataBytes);
                     packet.Etx = this.Etx;
 
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
-
+                    throw new PacketException(packet, "Packet Parse Error", e);
                 }
             }
 
@@ -81,7 +77,7 @@ namespace ADTPush.Infra
             builder.Append(obj.DataLength);
             builder.Append(obj.Type);
             builder.Append(obj.Req_time);
-            builder.Append(obj.Req_time);
+            builder.Append(obj.Res_time);
             builder.Append(obj.Data);
             builder.Append(obj.Etx);
 

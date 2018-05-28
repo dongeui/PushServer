@@ -1,4 +1,5 @@
-﻿using SuperSocket.SocketBase.Command;
+﻿using ADTPush.Exception;
+using SuperSocket.SocketBase.Command;
 using SuperSocket.SocketBase.Protocol;
 using System;
 using System.Collections.Generic;
@@ -24,17 +25,33 @@ namespace ADTPush.Infra
                         //db
                         dbc.RegisterInfo(reqPacket.CustomerID, reqPacket.Data);
 
+                        Console.WriteLine("packet : : " + Encoding.Default.GetString(reqPacket.PacketBytes(reqPacket)));
                         //client response
                         pp.Type = "0";
-                        string text = "Login Success";
+                        string text = "로그인 응답";
                         pp.DataLength = text.Length;
                         pp.Data = text;
-                        var ppBytes = pp.PacketBytes(pp);
-                        resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
+                        try
+                        {
+                            var ppBytes = pp.PacketBytes(pp);
+                            resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
+
+                        }
+                        catch(System.Exception e)
+                        {
+                            throw new PacketException(reqPacket, "Packet Parse Error", e);
+                        }
 
                         if (resResult)
                         {
-                            //디비 로그
+                            //응답 로그
+                            dbc.ServerLog(pp.CustomerID, pp.Type, DateTime.Parse(pp.Res_time), "True");
+                            Console.WriteLine("Send 성공");
+                        }
+                        if (!resResult)
+                        {
+                            dbc.ServerLog(pp.CustomerID, pp.Type, DateTime.Parse(pp.Res_time), "False");
+                            Console.WriteLine("Send 실패");
                         }
 
                         break;
@@ -43,9 +60,22 @@ namespace ADTPush.Infra
                         string resultToken = dbc.SelectInfoById(reqPacket.CustomerID);
                         if (resultToken != null)
                         {
+                            string mssg = string.Empty;
                             var messageType = reqPacket.Data;
+                            switch (messageType)
+                            {
+                                case "0":
+                                    mssg = MessageList.test;
+                                    break;
+                                case "1":
+                                    mssg = MessageList.test;
+                                    break;
+                                default:
+                                    break;
+                            }
+
                             SendMessage msg = new SendMessage();
-                            bool bobo = msg.Send(resultToken, MessageList.test);
+                            bool bobo = msg.Send(resultToken, mssg);
 
                         }
 
@@ -71,9 +101,9 @@ namespace ADTPush.Infra
                 }
 
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
-
+                throw new PacketException(requestInfo.Body, "Command Error", e);
             }
         }
     }

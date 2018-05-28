@@ -1,4 +1,5 @@
-﻿using SuperSocket.Facility.Protocol;
+﻿using ADTPush.Exception;
+using SuperSocket.Facility.Protocol;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Protocol;
 using System;
@@ -13,29 +14,33 @@ namespace ADTPush.Infra
     public class ReceiveFilter : FixedHeaderReceiveFilter<PushRequestInfo>
     {
         public ReceiveFilter() : base(Packet.HeaderSize) { }
-        /// <summary>   
-        /// Type 0:응답, 1:로그인 2:명령코드
-        /// 0: 1(성공),0(실패)
-        /// 1: Token(모바일UID)
-        /// 2: 전송명령코드
-        /// </summary>
+      
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
         {
-          
-            byte[] dataBytes = new byte[5];
-            for (int i = 0; i < 5; i++)
+            try
             {
-                dataBytes[i] = header[offset + 10 + i];
+                byte[] dataBytes = new byte[5];
+                for (int i = 0; i < 5; i++)
+                {
+                    dataBytes[i] = header[offset + 10 + i];
+                }
+                var dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
+                return dataLength;
             }
-            var dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
-
-            return dataLength;
+            catch(System.Exception e)
+            {
+                Packet pp = new Packet();
+                throw new PacketException(pp, "Packet Data Length Check Error", e);
+            }
         }
 
         protected override PushRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
             Packet packet = new Packet();
             var reqPacket = packet.Parse(header, bodyBuffer, offset, length);
+
+            DBControl dbc = new DBControl();
+            dbc.ServerLog(reqPacket.CustomerID, reqPacket.Type, DateTime.Parse(reqPacket.Req_time));
 
             return new PushRequestInfo("Command", reqPacket);
         }
