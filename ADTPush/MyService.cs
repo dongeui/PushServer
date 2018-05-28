@@ -19,16 +19,12 @@ namespace ADTPush
 
         protected override void OnStart(string[] args)
         {
-            // Update the service state to Start Pending.
             Program.Start(args);
-            //base.OnStart(args);
         }
 
         protected override void OnStop()
         {
-            // Update the service state to Stop Pending.
-         
-            base.OnStop();
+            Program.Stop();
         }
 
     }

@@ -86,7 +86,7 @@ namespace ADTPush
 
             conn.Close();
         }
-        public void ErrorLog(string id, string date,string msg, string ex)
+        public void ErrorLog(string id, string date, string msg, string ex)
         {
             conn.Open();
             string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMessage, Date, Excetpion) VALUES (@id, @msg, @date, @ex) ";
