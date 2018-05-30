@@ -8,9 +8,11 @@ namespace ADTPush
 {
     public class MessageList
     {
-        public const string test = "ADT PUSH TEST";
+        public const string test = "서비스 구동";
+        public const string test1 = "컴퓨터 재시작";
+        public const string test2 = "";
 
-       
-        
+
+
     }
 }

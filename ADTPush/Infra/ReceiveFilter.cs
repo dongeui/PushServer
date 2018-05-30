@@ -17,6 +17,10 @@ namespace ADTPush.Infra
       
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
         {
+            //byte[] testbytes = new byte[16];
+            //for(int i=0; i<length; i++){
+            //    testbytes[i] = header[offset+i];
+            //}
             try
             {
                 byte[] dataBytes = new byte[5];
@@ -29,20 +33,37 @@ namespace ADTPush.Infra
             }
             catch(System.Exception e)
             {
-                Packet pp = new Packet();
-                throw new PacketException(pp, "Packet Data Length Check Error", e);
+                byte[] newPacket = new byte[length];
+                for(int i=0; i<length; i++){
+                    newPacket[i] = header[offset+i];
+                }
+                throw new PacketException(newPacket, "Packet Data Length Check Error", e);
             }
         }
 
         protected override PushRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
-            Packet packet = new Packet();
-            var reqPacket = packet.Parse(header, bodyBuffer, offset, length);
-
-            DBControl dbc = new DBControl();
-            dbc.ServerLog(reqPacket.CustomerID, reqPacket.Type, DateTime.Parse(reqPacket.Req_time));
-
-            return new PushRequestInfo("Command", reqPacket);
+            PushRequestInfo requestInfo;
+            //try
+            //{
+                var reqPacket = PacketParser.Parse(header, bodyBuffer, offset, length);
+                if (reqPacket.CustomerID == null)
+                {
+                    requestInfo = new PushRequestInfo("ExceptionCommand", null);
+                }
+                else
+                {
+                    DBControl dbc = new DBControl();
+                    dbc.ServerLog(reqPacket.CustomerID, reqPacket.Type, reqPacket.Req_time);
+                }
+                
+            //}
+            //catch (System.Exception e)
+            //{
+            //    throw new PacketException("RequestInfo Error", e);
+            //}
+            requestInfo = new PushRequestInfo("Command", reqPacket);
+            return requestInfo;
         }
     }
 }

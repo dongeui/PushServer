@@ -18,50 +18,50 @@ namespace ADTPush.Infra
                 DBControl dbc = new DBControl();
                 bool resResult = false;
                 var reqPacket = requestInfo.Body;
-                var pp = reqPacket;
-                pp.Type = "0";
+                var resPacket = new Packet
+                {
+                    Stx = reqPacket.Stx,
+                    CustomerID = reqPacket.CustomerID,
+                    Req_time = reqPacket.Req_time,
+                    Res_time = DateTime.Now.ToString("yyyyMMddHHmmss"),
+                    Etx = reqPacket.Etx
+                };
 
-                switch (reqPacket.Type)
+                switch (requestInfo.Body.Type)
                 {
                     //모바일 UID 등록
                     case "49":
-                        dbc.RegisterInfo(reqPacket.CustomerID, reqPacket.Data);
+                        dbc.RegisterInfoLog(reqPacket.CustomerID, reqPacket.Data);
 
-                        string text = "0";
-                        pp.DataLength = text.Length;
-                        pp.Data = text;
+                        //1성공 0실패
+                        string text = "1";
+                        resPacket.Type = "0";
+                        resPacket.DataLength = text.Length.ToString().PadLeft(5, '0');
+                        resPacket.Data = text;
 
                         try
                         {
-                            var ppBytes = pp.PacketBytes(pp);
-                            resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
-
+                            var resPacketBytes = resPacket.PacketBytes(resPacket);
+                            resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
                         catch(System.Exception e)
                         {
-                            throw new PacketException(reqPacket, "Packet Parse Error", e);
+                            throw new PacketException(reqPacket, "Packet Send Error", e);
                         }
 
                         if (resResult)
-                            dbc.ServerLog(pp.CustomerID, pp.Type, DateTime.Parse(pp.Res_time), "True");
+                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "True");
                         if (!resResult)
-                            dbc.ServerLog(pp.CustomerID, pp.Type, DateTime.Parse(pp.Res_time), "False");
+                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "False");
 
                         break;
 
                     //메시지 전송
                     case "50":
-                        string resultToken = dbc.SelectInfoById(reqPacket.CustomerID);
+                        string resultToken = dbc.SelectInfoLogById(reqPacket.CustomerID);
 
                         if (resultToken != null)
                         {
-                            string te = "0";
-                            pp.DataLength = te.Length;
-                            pp.Data = te;
-
-                            var ppBytes = pp.PacketBytes(pp);
-                            resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
-
                             string mssg = string.Empty;
                             var messageType = reqPacket.Data;
                             switch (messageType)
@@ -70,7 +70,7 @@ namespace ADTPush.Infra
                                     mssg = MessageList.test;
                                     break;
                                 case "1":
-                                    mssg = MessageList.test;
+                                    mssg = MessageList.test1;
                                     break;
                                 default:
                                     break;
@@ -79,14 +79,34 @@ namespace ADTPush.Infra
                             //메세지 보내라고 테스트 하는 기능
                             SendMessage msg = new SendMessage();
                             bool bobo = msg.Send(resultToken, mssg);
+                            if(bobo)
+                            {
+                                //send 성공
+                                string te = "1";
+                                resPacket.DataLength = te.Length.ToString().PadLeft(5, '0');
+                                resPacket.Data = te;
+                            }
+                            if(!bobo)
+                            {
+                                //send 실패
+                                string te = "0";
+                                resPacket.DataLength = te.Length.ToString().PadLeft(5, '0');
+                                resPacket.Data = te;
+                            }
 
+                            resPacket.Type = "0";
+
+                            var resPacketBytes = resPacket.PacketBytes(resPacket);
+                            resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
-                        if(resultToken == null) {
-                            string te = "1";
-                            pp.DataLength = te.Length;
-                            pp.Data = te;
-                            var ppBytes = pp.PacketBytes(pp);
-                            resResult = session.TrySend(ppBytes, 0, ppBytes.Length);
+
+                        if (resultToken == null)
+                        {
+                            string te = "0";
+                            resPacket.DataLength = te.Length.ToString().PadLeft(5, '0');
+                            resPacket.Data = te;
+                            var resPacketBytes = resPacket.PacketBytes(resPacket);
+                            resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
                         break;
 
