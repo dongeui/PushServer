@@ -50,9 +50,15 @@ namespace ADTPush.Infra
                         }
 
                         if (resResult)
+                        {
                             dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "True");
+                            //session.Close();
+                        }
                         if (!resResult)
+                        {
                             dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "False");
+                            //session.Close();
+                        }
 
                         break;
 
@@ -78,8 +84,9 @@ namespace ADTPush.Infra
 
                             //메세지 보내라고 테스트 하는 기능
                             SendMessage msg = new SendMessage();
-                            bool bobo = msg.Send(resultToken, mssg);
-                            if(bobo)
+                            bool bobo = true;
+                            //bobo = msg.Send(resultToken, mssg);
+                            if (bobo)
                             {
                                 //send 성공
                                 string te = "1";
@@ -107,6 +114,17 @@ namespace ADTPush.Infra
                             resPacket.Data = te;
                             var resPacketBytes = resPacket.PacketBytes(resPacket);
                             resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
+                        }
+
+                        if (resResult)
+                        {
+                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "True");
+                            //session.Close();
+                        }
+                        if (!resResult)
+                        {
+                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "False");
+                           // session.Close();
                         }
                         break;
 

@@ -16,15 +16,20 @@ namespace ADTPush.Exception
             DBControl dbc = new DBControl();
             dbc.ErrorLog(msg, e.ToString());
         }
+        public PacketException(string msg, string e)
+        {
+            DBControl dbc = new DBControl();
+            dbc.ErrorLog(msg, e.ToString());
+        }
         public PacketException(Packet packet, string msg, System.Exception e)
         {
             DBControl dbc = new DBControl();
-            dbc.ErrorLog(packet.CustomerID, packet.Req_time, msg, e.ToString());
+            dbc.ErrorLog(packet.CustomerID,  msg, e.ToString());
         }
         public PacketException(byte[] bytes, string msg, System.Exception e)
         {
             DBControl dbc = new DBControl();
-            dbc.ErrorLog(Convert.ToString(bytes), DateTime.Now.ToString(), msg, e.ToString());
+            dbc.ErrorLog(Convert.ToString(bytes), msg, e.ToString());
         }
         
        

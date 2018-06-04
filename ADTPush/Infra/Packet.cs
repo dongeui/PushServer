@@ -47,5 +47,19 @@ namespace ADTPush.Infra
             return aaa;
 
         }
+        public string PacketString(Packet obj)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append(obj.Stx);
+            builder.Append(obj.CustomerID);
+            builder.Append(obj.DataLength);
+            builder.Append(obj.Type);
+            builder.Append(obj.Req_time);
+            builder.Append(obj.Res_time);
+            builder.Append(obj.Data);
+            builder.Append(obj.Etx);
+
+            return builder.ToString();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADTPush.Infra;
+using System;
 using System.Data.SqlClient;
 
 namespace ADTPush
@@ -56,17 +57,18 @@ namespace ADTPush
         public void ServerLog(string id, string type, string date)
         {
             conn.Open();
-            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date) VALUES (@id, @type, @date) ";
+            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool) VALUES (@id, @type, @date, @packet) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@type", type);
             cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+            cmd.Parameters.AddWithValue("@packet", "");
             cmd.ExecuteReader();
 
             conn.Close();
         }
-        
+
         public void ServerLog(string id, string type, string date, string bb)
         {
             conn.Open();
@@ -81,27 +83,23 @@ namespace ADTPush
 
             conn.Close();
         }
-        public void ErrorLog(string id, string date, string msg, string ex)
+        public void ErrorLog(string id, string msg, string ex)
         {
             conn.Open();
             string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception) VALUES (@id, @msg, @date, @ex) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
             if(id == null)
-                cmd.Parameters.AddWithValue("@id", "NullPacket");
+                cmd.Parameters.AddWithValue("@id", "");
             else
                 cmd.Parameters.AddWithValue("@id", id);
 
             if (msg == null)
-                cmd.Parameters.AddWithValue("@Msg", "NullPacket");
+                cmd.Parameters.AddWithValue("@Msg", "");
             else
                 cmd.Parameters.AddWithValue("@msg", msg);
-
-            if (date == null)
-                cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
-            else
-                cmd.Parameters.AddWithValue("@date", date);
-           
+            
+            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@ex", ex);
             cmd.ExecuteReader();
 
@@ -113,7 +111,7 @@ namespace ADTPush
             string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception) VALUES (@id, @msg, @date, @ex) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
-            cmd.Parameters.AddWithValue("@id", "NULL");
+            cmd.Parameters.AddWithValue("@id", "");
             cmd.Parameters.AddWithValue("@msg", msg);
             cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@ex", ex);

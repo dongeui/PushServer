@@ -11,6 +11,7 @@ namespace ADTPush.Infra
     {
         public static Packet Parse(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
         {
+            string ee =  null;
                 try
                 {
                     var packet = new Packet();
@@ -37,16 +38,20 @@ namespace ADTPush.Infra
                     packet.Type = Convert.ToString(typeByte);
                     packet.DataLength = length.ToString().PadLeft(5,'0');
                
-                    var dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
+                    //var dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
                     packet.Req_time = Encoding.Default.GetString(reqTimeBytes);
-                    packet.Res_time = DateTime.Now.ToString("yyyyMMddHHmmss");
+                    packet.Res_time = Encoding.Default.GetString(resTimeBytes);
+                    //packet.Res_time = DateTime.Now.ToString("yyyyMMddHHmmss");
                     packet.Data = Encoding.Default.GetString(dataBytes);
                     packet.Etx = "E";
+
+                    ee = packet.PacketString(packet);
+
                     return packet;
                 }
                 catch (System.Exception e)
                 {
-                    throw new PacketException("Packet Parse Error", e);
+                    throw new PacketException("Packet Parse Error", ee);
                 }
 
          

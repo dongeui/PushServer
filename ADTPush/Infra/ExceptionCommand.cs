@@ -11,6 +11,7 @@ namespace ADTPush.Infra
     {
         public override void ExecuteCommand(PushSession session, PushRequestInfo requestInfo)
         {
+            session.Close();
         }
     }
 }
