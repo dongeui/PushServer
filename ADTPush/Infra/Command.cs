@@ -49,16 +49,7 @@ namespace ADTPush.Infra
                             throw new PacketException(reqPacket, "Packet Send Error", e);
                         }
 
-                        if (resResult)
-                        {
-                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "True");
-                            //session.Close();
-                        }
-                        if (!resResult)
-                        {
-                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "False");
-                            //session.Close();
-                        }
+                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString());
 
                         break;
 
@@ -116,20 +107,11 @@ namespace ADTPush.Infra
                             resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
 
-                        if (resResult)
-                        {
-                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "True");
-                            //session.Close();
-                        }
-                        if (!resResult)
-                        {
-                            dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, "False");
-                           // session.Close();
-                        }
+                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString());
+
                         break;
 
                     default:
-
                         break;
                 }
 

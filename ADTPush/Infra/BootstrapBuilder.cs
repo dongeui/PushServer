@@ -35,7 +35,7 @@ namespace ADTPush.Infra
             return new ServerConfig
             {
                 Name = "ADT PUSH SERVER",
-                Ip = "Any",
+                Ip = "192.168.0.5",
                 Port = port,
                 Mode = SocketMode.Tcp,
                 MaxConnectionNumber = MaxConnect
