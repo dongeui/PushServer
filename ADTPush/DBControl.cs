@@ -53,32 +53,67 @@ namespace ADTPush
             conn.Close();
             return result;
         }
-
-        public void ServerLog(string id, string type, string date)
+        
+        public string SelectInfoByPhoneNumber(string phoneNumber)
         {
             conn.Open();
-            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool) VALUES (@id, @type, @date, @packet) ";
 
-            SqlCommand cmd = new SqlCommand(LogQuery, conn);
-            cmd.Parameters.AddWithValue("@id", id);
-            cmd.Parameters.AddWithValue("@type", type);
-            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
-            cmd.Parameters.AddWithValue("@packet", "");
-            cmd.ExecuteReader();
+
+            string selectQueryByPhoneNumber = "SELECT CustomerID FROM KeyMap where PhoneNumber = @phoneNum";
+
+            SqlCommand cmd = new SqlCommand(selectQueryByPhoneNumber, conn);
+            cmd.Parameters.AddWithValue("@phoneNum", phoneNumber);
+            SqlDataReader reader = cmd.ExecuteReader();
+            string result = null;
+            while (reader.Read())
+            {
+                result = String.Format("{0}", reader[0]);
+            }
 
             conn.Close();
+            return SelectInfoLogById(result);
         }
 
-        public void ServerLog(string id, string type, string date, string bb)
+        //public void ServerLog(string id, string type, string date, string phone)
+        //{
+        //    conn.Open();
+        //    string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool) VALUES (@id, @type, @date, @packet, @phoneNum) ";
+
+        //    SqlCommand cmd = new SqlCommand(LogQuery, conn);
+        //    cmd.Parameters.AddWithValue("@id", id);
+        //    cmd.Parameters.AddWithValue("@type", type);
+        //    cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+        //    cmd.Parameters.AddWithValue("@packet", "");
+        //    cmd.Parameters.AddWithValue("@phoneNum", phone);
+        //    cmd.ExecuteReader();
+        //    conn.Close();
+        //}
+
+        public void ServerLog(string id, string type, string date, string bb, string phone)
         {
             conn.Open();
-            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool) VALUES (@id, @type, @date, @bool) ";
+            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool, PhoneNumber) VALUES (@id, @type, @date, @bool, @phoneNum) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@type", type);
             cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@bool", bb);
+            cmd.Parameters.AddWithValue("@phoneNum", phone);
+            cmd.ExecuteReader();
+
+            conn.Close();
+        }
+
+        public void KeyMapSetting(string id, string phone)
+        {
+            conn.Open();
+            string insertQuery = "IF EXISTS (SELECT PhoneNumber FROM KeyMap Where PhoneNumber = @phoneNum) BEGIN UPDATE KeyMap SET CustomerID = @id, PhoneNumber = @phoneNum Where PhoneNumber = @phoneNum END ELSE BEGIN INSERT INTO KeyMap (CustomerID, PhoneNumber) VALUES (@id, @phoneNum) END";
+            //string insertQuery = "INSERT INTO KeyMap (CustomerID, PhoneNumber) VALUES (@id,  @phoneNum) ";
+
+            SqlCommand cmd = new SqlCommand(insertQuery, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@phoneNum", phone);
             cmd.ExecuteReader();
 
             conn.Close();

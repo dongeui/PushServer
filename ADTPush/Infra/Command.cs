@@ -22,6 +22,8 @@ namespace ADTPush.Infra
                 {
                     Stx = reqPacket.Stx,
                     CustomerID = reqPacket.CustomerID,
+                    PhoneNum = reqPacket.PhoneNum,
+                    Temp = reqPacket.Temp,
                     Req_time = reqPacket.Req_time,
                     Res_time = DateTime.Now.ToString("yyyyMMddHHmmss"),
                     Etx = reqPacket.Etx
@@ -32,6 +34,8 @@ namespace ADTPush.Infra
                     //모바일 UID 등록
                     case "49":
                         dbc.RegisterInfoLog(reqPacket.CustomerID, reqPacket.Data);
+                        //phone, key 관리
+                        dbc.KeyMapSetting(reqPacket.CustomerID, reqPacket.PhoneNum);
 
                         //1성공 0실패
                         string text = "1";
@@ -49,7 +53,7 @@ namespace ADTPush.Infra
                             throw new PacketException(reqPacket, "Packet Send Error", e);
                         }
 
-                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString());
+                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString(), reqPacket.PhoneNum);
 
                         break;
 
@@ -107,7 +111,7 @@ namespace ADTPush.Infra
                             resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
 
-                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString());
+                        dbc.ServerLog(resPacket.CustomerID, reqPacket.Type, resPacket.Res_time, resResult.ToString(), reqPacket.PhoneNum);
 
                         break;
 

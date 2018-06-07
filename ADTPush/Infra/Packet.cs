@@ -12,9 +12,11 @@ namespace ADTPush.Infra
 {
        public class Packet
     {
-        public const int HeaderSize = 16;
+        public const int HeaderSize = 43;
         public string Stx = "S";
         public string CustomerID { get; set; }
+        public string PhoneNum { get; set; }
+        public string Temp { get; set; }
         public string Type { get; set; }
         public string DataLength { get; set; }
         public string Req_time { get; set; }
@@ -32,6 +34,8 @@ namespace ADTPush.Infra
                 StringBuilder builder = new StringBuilder();
                 builder.Append(obj.Stx);
                 builder.Append(obj.CustomerID);
+                builder.Append(obj.PhoneNum);
+                builder.Append(obj.Temp);
                 builder.Append(obj.DataLength);
                 builder.Append(obj.Type);
                 builder.Append(obj.Req_time);
@@ -52,6 +56,8 @@ namespace ADTPush.Infra
             StringBuilder builder = new StringBuilder();
             builder.Append(obj.Stx);
             builder.Append(obj.CustomerID);
+            builder.Append(obj.PhoneNum);
+            builder.Append(obj.Temp);
             builder.Append(obj.DataLength);
             builder.Append(obj.Type);
             builder.Append(obj.Req_time);

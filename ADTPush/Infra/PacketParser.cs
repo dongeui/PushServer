@@ -21,7 +21,19 @@ namespace ADTPush.Infra
                         idbytes[i] = header.Array[i + 1];
                     }
 
-                    byte typeByte = header.Array[15];
+                    byte[] phoneNumBytes = new byte[11];
+                    for(int i=0; i<11; i++)
+                {
+                    phoneNumBytes[i] = header.Array[i + 10];
+                }
+
+                byte[] tempBytes = new byte[10];
+                for (int i = 0; i < 10; i++)
+                {
+                    tempBytes[i] = header.Array[i + 21];
+                }
+
+                byte typeByte = header.Array[15];
 
                     int timeSize = 14;
                     byte[] reqTimeBytes = new byte[timeSize];
@@ -34,7 +46,9 @@ namespace ADTPush.Infra
                     Array.Copy(bodyBuffer, offset + timeSize + timeSize, dataBytes, 0, length);
 
                     packet.Stx = "S";
-                    packet.CustomerID = Encoding.Default.GetString(idbytes);
+                packet.PhoneNum = Encoding.Default.GetString(phoneNumBytes);
+                packet.Temp = Encoding.Default.GetString(tempBytes);
+                packet.CustomerID = Encoding.Default.GetString(idbytes);
                     packet.Type = Convert.ToString(typeByte);
                     packet.DataLength = length.ToString().PadLeft(5,'0');
                

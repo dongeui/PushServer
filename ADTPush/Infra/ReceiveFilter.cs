@@ -34,7 +34,8 @@ namespace ADTPush.Infra
                 byte[] dataBytes = new byte[5];
                 for (int i = 0; i < 5; i++)
                 {
-                    dataBytes[i] = header[offset + 10 + i];
+                    //stx + customerNO + phoneNum + temp = 37
+                    dataBytes[i] = header[offset + 37 + i];
                 }
                 if (dataBytes[0]!=0 || dataBytes[1] != 0 || dataBytes[2] != 0 || dataBytes[3] != 0 || dataBytes[4] != 0)
                     dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
