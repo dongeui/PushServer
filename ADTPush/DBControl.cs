@@ -21,26 +21,30 @@ namespace ADTPush
             }
         }
 
-        public void RegisterInfoLog(string id, string token)
+        public void RegisterInfo(string id, string token, string phoneNum, string os)
         {
             conn.Open();
 
-            string query = "IF EXISTS (SELECT CustomerID FROM InfoLog Where CustomerID = @id) BEGIN UPDATE InfoLog SET RegisterToken = @Token, Date = @date WHERE CustomerID = @id END ELSE BEGIN INSERT INTO InfoLog (CustomerID, RegisterToken, Date) VALUES (@id, @token, @date) END";
+            string query = "IF EXISTS (SELECT PhoneNumber FROM Info Where PhoneNumber = @phoneNum) " +
+                "BEGIN UPDATE Info SET RegisterToken = @Token, SetDate = @SetDate, CustomerID = @id, OS = @os WHERE PhoneNumber = @PhoneNum " +
+                "END ELSE BEGIN INSERT INTO Info (CustomerID, RegisterToken, SetDate, PhoneNumber, OS) VALUES (@id, @token, @SetDate, @phoneNum, @os) END";
 
             SqlCommand cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@id", id);
+            cmd.Parameters.AddWithValue("@PhoneNum", phoneNum);
             cmd.Parameters.AddWithValue("@token", token);
-            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+            cmd.Parameters.AddWithValue("@SetDate", DateTime.Now.ToString());
+            cmd.Parameters.AddWithValue("@os", os);
             cmd.ExecuteReader();
 
             conn.Close();
         }
 
-        public string SelectInfoLogById(string id)
+        public string SelectTokenInfoById(string id)
         {
             conn.Open();
 
-            string selectQueryById = "SELECT RegisterToken FROM InfoLog where CustomerID = @id";
+            string selectQueryById = "SELECT RegisterToken FROM Info where CustomerID = @id";
 
             SqlCommand cmd = new SqlCommand(selectQueryById, conn);
             cmd.Parameters.AddWithValue("@id", id);
@@ -53,13 +57,29 @@ namespace ADTPush
             conn.Close();
             return result;
         }
-        
+        public string SelectOSTypeById(string id)
+        {
+            conn.Open();
+
+            string selectQueryById = "SELECT OS FROM Info where CustomerID = @id";
+
+            SqlCommand cmd = new SqlCommand(selectQueryById, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader = cmd.ExecuteReader();
+            string result = null;
+            while (reader.Read())
+            {
+                result = String.Format("{0}", reader[0]);
+            }
+            conn.Close();
+            return result;
+        }
+
         public string SelectInfoByPhoneNumber(string phoneNumber)
         {
             conn.Open();
 
-
-            string selectQueryByPhoneNumber = "SELECT CustomerID FROM KeyMap where PhoneNumber = @phoneNum";
+            string selectQueryByPhoneNumber = "SELECT CustomerID, OS FROM Info where PhoneNumber = @phoneNum";
 
             SqlCommand cmd = new SqlCommand(selectQueryByPhoneNumber, conn);
             cmd.Parameters.AddWithValue("@phoneNum", phoneNumber);
@@ -71,60 +91,35 @@ namespace ADTPush
             }
 
             conn.Close();
-            return SelectInfoLogById(result);
+            return SelectTokenInfoById(result);
         }
 
-        //public void ServerLog(string id, string type, string date, string phone)
-        //{
-        //    conn.Open();
-        //    string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool) VALUES (@id, @type, @date, @packet, @phoneNum) ";
 
-        //    SqlCommand cmd = new SqlCommand(LogQuery, conn);
-        //    cmd.Parameters.AddWithValue("@id", id);
-        //    cmd.Parameters.AddWithValue("@type", type);
-        //    cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
-        //    cmd.Parameters.AddWithValue("@packet", "");
-        //    cmd.Parameters.AddWithValue("@phoneNum", phone);
-        //    cmd.ExecuteReader();
-        //    conn.Close();
-        //}
-
-        public void ServerLog(string id, string type, string date, string bb, string phone)
+        public void ServerLog(string id, string type, string SetDate, string bb, string phoneNum)
         {
             conn.Open();
-            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool, PhoneNumber) VALUES (@id, @type, @date, @bool, @phoneNum) ";
+            string LogQuery = "INSERT INTO ServerLog (CustomerID, Type, Date, ResponseBool, PhoneNumber) VALUES (@id, @type, @Date, @bool, @phoneNum) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.Parameters.AddWithValue("@type", type);
-            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+            cmd.Parameters.AddWithValue("@Date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@bool", bb);
-            cmd.Parameters.AddWithValue("@phoneNum", phone);
+            cmd.Parameters.AddWithValue("@phoneNum", phoneNum);
             cmd.ExecuteReader();
 
             conn.Close();
         }
 
-        public void KeyMapSetting(string id, string phone)
+
+
+        public void ErrorLog(string id, string msg, string ex, string phoneNum)
         {
             conn.Open();
-            string insertQuery = "IF EXISTS (SELECT PhoneNumber FROM KeyMap Where PhoneNumber = @phoneNum) BEGIN UPDATE KeyMap SET CustomerID = @id, PhoneNumber = @phoneNum Where PhoneNumber = @phoneNum END ELSE BEGIN INSERT INTO KeyMap (CustomerID, PhoneNumber) VALUES (@id, @phoneNum) END";
-            //string insertQuery = "INSERT INTO KeyMap (CustomerID, PhoneNumber) VALUES (@id,  @phoneNum) ";
-
-            SqlCommand cmd = new SqlCommand(insertQuery, conn);
-            cmd.Parameters.AddWithValue("@id", id);
-            cmd.Parameters.AddWithValue("@phoneNum", phone);
-            cmd.ExecuteReader();
-
-            conn.Close();
-        }
-        public void ErrorLog(string id, string msg, string ex)
-        {
-            conn.Open();
-            string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception) VALUES (@id, @msg, @date, @ex) ";
+            string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception, PhoneNumber) VALUES (@id, @msg, @Date, @ex, @phoneNum) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
-            if(id == null)
+            if (id == null)
                 cmd.Parameters.AddWithValue("@id", "");
             else
                 cmd.Parameters.AddWithValue("@id", id);
@@ -133,22 +128,24 @@ namespace ADTPush
                 cmd.Parameters.AddWithValue("@Msg", "");
             else
                 cmd.Parameters.AddWithValue("@msg", msg);
-            
-            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+
+            cmd.Parameters.AddWithValue("@Date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@ex", ex);
+            cmd.Parameters.AddWithValue("@phoneNum", phoneNum);
             cmd.ExecuteReader();
 
             conn.Close();
         }
+
         public void ErrorLog(string msg, string ex)
         {
             conn.Open();
-            string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception) VALUES (@id, @msg, @date, @ex) ";
+            string LogQuery = "INSERT INTO ErrorLog (CustomerID, ErrorMeesage, Date, Exception) VALUES (@id, @msg, @Date, @ex) ";
 
             SqlCommand cmd = new SqlCommand(LogQuery, conn);
             cmd.Parameters.AddWithValue("@id", "");
             cmd.Parameters.AddWithValue("@msg", msg);
-            cmd.Parameters.AddWithValue("@date", DateTime.Now.ToString());
+            cmd.Parameters.AddWithValue("@Date", DateTime.Now.ToString());
             cmd.Parameters.AddWithValue("@ex", ex);
             cmd.ExecuteReader();
 

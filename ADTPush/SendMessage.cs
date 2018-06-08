@@ -11,10 +11,6 @@ namespace ADTPush
 {
     public class SendMessage
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-
-        //차후에 deveiceList고 우선 1개만
         public bool Send(string deviceList, string message)
         {
             string SERVER_API_KEY = "AAAA3EnShoY:APA91bEvDbFQJVKzsZQ1Q4LTnCiJ6juOZRH66mrB3wwk6vPUyNDA4IauSeTsiLWBGv_ZcgscVKIX8ckW6OZRcdwXiGPndDVi5TUUuiwarwU9MvrXCkV6kEB_yYSJfkKkZbZwa3JPbPV9";
@@ -29,21 +25,35 @@ namespace ADTPush
             request.Headers.Add(string.Format("Sender: Id={0}", senderId));
             request.KeepAlive = false;
 
-            //background에서 안되면 noti->data
-            var postData =
-            new
+            string deviceId = "cA64WBuL2SI:APA91bESyd2JFtmLOxLzm7ORCGbr1MRszZHAE9JAoO6C1KYSkI6DXGGIkSX4hEf42L0k_IGxSYCs6Gy7GmspyvS1LkUDycRcx9mo64D5xJiLLQdfGJQwoQ1drKmvzAzZNFttME7vZrAY";
+
+            //IOS
+            var IOSData = new
             {
                 notification = new
                 {
-                    title = "ADTPUSH_TEST",
+                    title = "ADT",
                     body = message,
                 },
-
-                // FCM allows 1000 connections in parallel.
-                to = deviceList
+                content_available = true,
+                priority = "high",
+                to = deviceId
             };
 
-            string contentMsg = JsonConvert.SerializeObject(postData);
+            //ANDROID
+            var AndData = new
+            {
+                data = new
+                {
+                    title = "ADT",
+                    body = message,
+                },
+                content_available = true,
+                priority = "high",
+                to = deviceId
+            };
+
+            string contentMsg = JsonConvert.SerializeObject(IOSData);
 
             Byte[] byteArray = Encoding.UTF8.GetBytes(contentMsg);
             request.ContentLength = byteArray.Length;
@@ -51,7 +61,6 @@ namespace ADTPush
             Stream dataStream = request.GetRequestStream();
             //result 를 sendReuslt에 넣어주기
             dataStream.Write(byteArray, 0, byteArray.Length);
-            log.Info("Send Msg : : " + contentMsg + "    Time : : " + DateTime.Now);
             dataStream.Close();
 
             //try

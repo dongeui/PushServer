@@ -24,12 +24,7 @@ namespace ADTPush.Exception
         public PacketException(Packet packet, string msg, System.Exception e)
         {
             DBControl dbc = new DBControl();
-            dbc.ErrorLog(packet.CustomerID,  msg, e.ToString());
-        }
-        public PacketException(byte[] bytes, string msg, System.Exception e)
-        {
-            DBControl dbc = new DBControl();
-            dbc.ErrorLog(Convert.ToString(bytes), msg, e.ToString());
+            dbc.ErrorLog(packet.CustomerID,  msg, e.ToString(), packet.PhoneNum);
         }
         
        

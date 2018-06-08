@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ADTPush.Infra
 {
-       public class Packet
+    public class Packet
     {
         public const int HeaderSize = 43;
         public string Stx = "S";
@@ -21,10 +21,12 @@ namespace ADTPush.Infra
         public string DataLength { get; set; }
         public string Req_time { get; set; }
         public string Res_time { get; set; }
+        public string OS { get; set; }
         public string Data { get; set; }
+
         public string Etx = "E";
-    
-      
+
+
 
         public byte[] PacketBytes(Packet obj)
         {
@@ -41,10 +43,11 @@ namespace ADTPush.Infra
                 builder.Append(obj.Req_time);
                 builder.Append(obj.Res_time);
                 builder.Append(obj.Data);
+                builder.Append(obj.OS);
                 builder.Append(obj.Etx);
                 aaa = Encoding.Default.GetBytes(builder.ToString());
             }
-            catch(System.Exception e)
+            catch (System.Exception e)
             {
                 throw new PacketException(obj, "PacketBytes Parse Error", e);
             }
@@ -63,6 +66,7 @@ namespace ADTPush.Infra
             builder.Append(obj.Req_time);
             builder.Append(obj.Res_time);
             builder.Append(obj.Data);
+            builder.Append(obj.OS);
             builder.Append(obj.Etx);
 
             return builder.ToString();

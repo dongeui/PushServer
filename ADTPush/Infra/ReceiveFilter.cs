@@ -14,10 +14,10 @@ namespace ADTPush.Infra
     public class ReceiveFilter : FixedHeaderReceiveFilter<PushRequestInfo>
     {
         public ReceiveFilter() : base(Packet.HeaderSize) { }
-      
+
         protected override int GetBodyLengthFromHeader(byte[] header, int offset, int length)
         {
-            int dataLength=0;
+            int dataLength = 0;
 
             //var length1 = header[offset + 10];
             //var length2 = header[offset + 11];
@@ -37,11 +37,11 @@ namespace ADTPush.Infra
                     //stx + customerNO + phoneNum + temp = 37
                     dataBytes[i] = header[offset + 37 + i];
                 }
-                if (dataBytes[0]!=0 || dataBytes[1] != 0 || dataBytes[2] != 0 || dataBytes[3] != 0 || dataBytes[4] != 0)
+                if (dataBytes[0] != 0 || dataBytes[1] != 0 || dataBytes[2] != 0 || dataBytes[3] != 0 || dataBytes[4] != 0)
                     dataLength = int.Parse(Encoding.Default.GetString(dataBytes));
 
             }
-            catch(System.Exception e)
+            catch (System.Exception e)
             {
                 //throw new PacketException("Packet Data Length Check Error", e);
                 dataLength = 0;

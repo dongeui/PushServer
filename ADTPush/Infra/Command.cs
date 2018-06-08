@@ -33,9 +33,7 @@ namespace ADTPush.Infra
                 {
                     //모바일 UID 등록
                     case "49":
-                        dbc.RegisterInfoLog(reqPacket.CustomerID, reqPacket.Data);
-                        //phone, key 관리
-                        dbc.KeyMapSetting(reqPacket.CustomerID, reqPacket.PhoneNum);
+                        dbc.RegisterInfo(reqPacket.CustomerID, reqPacket.Data, reqPacket.PhoneNum, reqPacket.OS);
 
                         //1성공 0실패
                         string text = "1";
@@ -48,7 +46,7 @@ namespace ADTPush.Infra
                             var resPacketBytes = resPacket.PacketBytes(resPacket);
                             resResult = session.TrySend(resPacketBytes, 0, resPacketBytes.Length);
                         }
-                        catch(System.Exception e)
+                        catch (System.Exception e)
                         {
                             throw new PacketException(reqPacket, "Packet Send Error", e);
                         }
@@ -58,8 +56,12 @@ namespace ADTPush.Infra
                         break;
 
                     //메시지 전송
+                    //phoneNumber가 있으면 해당하는 레지스터 토큰에만 보내면되고
+                    //fffffffffff면 해당하는 계약번호에 해당하는 모든사람에게 보냄
                     case "50":
-                        string resultToken = dbc.SelectInfoLogById(reqPacket.CustomerID);
+                        string resultToken = dbc.SelectTokenInfoById(reqPacket.CustomerID);
+                        //49 AND, 50 IOS
+                        string osType = dbc.SelectOSTypeById(reqPacket.CustomerID);
 
                         if (resultToken != null)
                         {
@@ -77,10 +79,11 @@ namespace ADTPush.Infra
                                     break;
                             }
 
-                            //메세지 보내라고 테스트 하는 기능
                             SendMessage msg = new SendMessage();
                             bool bobo = true;
                             //bobo = msg.Send(resultToken, mssg);
+
+
                             if (bobo)
                             {
                                 //send 성공
@@ -88,7 +91,7 @@ namespace ADTPush.Infra
                                 resPacket.DataLength = te.Length.ToString().PadLeft(5, '0');
                                 resPacket.Data = te;
                             }
-                            if(!bobo)
+                            if (!bobo)
                             {
                                 //send 실패
                                 string te = "0";
